@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Document</title>
+    <style>
+        #result {
+            background-color: aqua;
+            color: red;
+        }
+
+    </style>
+    <script>
+
+        async function sendRequest() {
+
+            // 承诺：promise  响应式
+            // 默认get
+            const result = await fetch("http://127.0.0.1:8001/api/data/1")
+
+             if (result.status == 200) {
+                 const data = await result.json()
+                document.getElementById("result").innerHTML = data.message + "获取了" + data.data.name + "的信息"
+
+             }else{
+                 document.getElementById("result").innerHTML = "获取失败"
+             }
+
+        }
+
+        async function saveMessage() {
+
+            console.log(typeof {"name": "张三", "age": 18})
+            console.log(typeof JSON.stringify({"name": "张三", "age": 18}))
+
+            // 默认get
+            const result = await fetch("http://127.0.0.1:8001/api/data", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    // id: 1,
+                    name: "张三",
+                    age: 18
+                })
+            })
+
+            if (result.status == 200) {
+                const data = await result.json()
+                document.getElementById("result").innerHTML = data.message + "，保存了用户信息，id = " + data.id
+            } else {
+                document.getElementById("result").innerHTML = "保存失败"
+            }
+
+        }
+
+    </script>
+</head>
+<body>
+<h1 id="h1">跨域测试</h1>
+
+<button onclick="console.log('nihao')">你好</button>
+<button onclick="sendRequest()">get请求</button>
+<button onclick="saveMessage()">post请求</button>
+<a href="https://knowledge_base.com/">尚硅谷</a>
+<a onclick="sendRequest()">点我跳转</a>
+<div id="result">显示结果</div>
+
+</body>
+</html>

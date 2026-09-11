@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>场景4：接受用户输入的问题，通过流式输出回答用户问题</title>
+</head>
+<body>
+<h3>场景4：接受用户输入的问题，通过流式输出回答用户问题</h3>
+<input type="text" id="queryInput" placeholder="请输入您的问题">
+<button onclick="send()">发送</button>
+<div id="result"></div>
+
+<script>
+    async function send(){
+
+        //去除文本框中输入的session_id
+        const query= document.getElementById("queryInput").value
+
+        // 动态生成session_id
+        // const sessionId = Math.random().toString(36).substring(2)
+        const sessionId = "query_" + Date.now()
+
+        // 发送请求
+        const response = await fetch(`http://127.0.0.1:8001/submit_query`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({query: query, session_id: sessionId})
+        })
+        //DOM ： Document Object Model
+        const resultDom = document.getElementById("result")
+
+        if (response.ok){
+            const resultData = await response.json()
+            resultDom.innerHTML = resultData.message + "<br>"
+        }
+
+        // 发送订阅请求
+        const eventSource = new EventSource(`http://127.0.0.1:8001/stream/${sessionId}`)
+
+        // 监听订阅的响应（实时接收）
+        eventSource.onmessage = function (event){
+            resultDom.innerHTML += event.data + "<br>"
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

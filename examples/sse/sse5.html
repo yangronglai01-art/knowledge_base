@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>场景5：SSE 事件属性说明</title>
+    <style>
+        .progress{
+            color: blue;
+        }
+        .complete{
+            color: green;
+        }
+        .error{
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h3>场景5：SSE 事件属性说明</h3>
+<input type="text" id="queryInput" placeholder="请输入您的问题">
+<button onclick="send()">发送</button>
+<div id="result"></div>
+
+<script>
+    async function send(){
+
+        //去除文本框中输入的session_id
+        const query= document.getElementById("queryInput").value
+
+        // 动态生成session_id
+        // const sessionId = Math.random().toString(36).substring(2)
+        const sessionId = "query_" + Date.now()
+
+        // 发送请求
+        const response = await fetch(`http://127.0.0.1:8001/submit_query`,{
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({query: query, session_id: sessionId})
+        })
+        //DOM ： Document Object Model
+        const resultDom = document.getElementById("result")
+
+        if (response.ok){
+            const resultData = await response.json()
+            resultDom.innerHTML = resultData.message + "<br>"
+        }
+
+        // 发送订阅请求
+        const eventSource = new EventSource(`http://127.0.0.1:8001/stream/${sessionId}`)
+
+        // 监听订阅的响应（实时接收）
+        eventSource.addEventListener("progress", function (event) {
+            resultDom.innerHTML += `<span class="progress">${event.data}</span><br>`
+        })
+        eventSource.addEventListener("complete", function (event) {
+            resultDom.innerHTML += `<span class="complete">${event.data}</span><br>`
+            // 关闭事件监听
+            eventSource.close()
+        })
+        eventSource.addEventListener("error", function (event) {
+            resultDom.innerHTML += `<span class="error">${event.data}</span><br>`
+            // 关闭事件监听
+            eventSource.close()
+        })
+    }
+
+</script>
+</body>
+</html>

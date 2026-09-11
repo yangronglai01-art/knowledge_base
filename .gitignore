@@ -1,0 +1,31 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE settings
+.idea/
+.vscode/
+
+# Runtime data and logs
+volumes/
+data/
+logs/
+*.log
+
+# Local learning experiments
+playground/
+
+# Unneeded demo asset
+examples/fastapi/static/animal.png

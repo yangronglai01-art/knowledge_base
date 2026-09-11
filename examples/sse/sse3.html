@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>场景3：异步任务</title>
+</head>
+<body>
+<h3>场景3：异步任务</h3>
+<input type="text" id="sessionIdInput" placeholder="请输入会话ID">
+<button onclick="send()">发送</button>
+<div id="result"></div>
+
+<script>
+    async function send(){
+
+        //去除文本框中输入的session_id
+        const sessionId= document.getElementById("sessionIdInput").value
+
+        // 发送请求
+        const response = await fetch(`http://127.0.0.1:8001/submit/${sessionId}`)
+        //DOM ： Document Object Model
+        const resultDom = document.getElementById("result")
+
+        if (response.status == 200){
+            const resultData = await response.json()
+            resultDom.innerHTML = resultData.message + "<br>"
+        }
+
+        // 发送订阅请求
+        const eventSource = new EventSource(`http://127.0.0.1:8001/stream/${sessionId}`)
+
+
+        // 监听订阅的响应（实时接收）
+        eventSource.onmessage = function (event){
+            resultDom.innerHTML += event.data + "<br>"
+        }
+    }
+
+
+
+</script>
+</body>
+</html>

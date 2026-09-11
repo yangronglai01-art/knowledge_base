@@ -1,0 +1,16 @@
+/*为标签定义样式*/
+h1 {
+    color: red;
+    font-family: verdana;
+    font-size: 60px;
+}
+
+/*为类（class）定义样式*/
+.myh2{
+    color: green;
+}
+
+/*为id定义样式*/
+#animal{
+    width: 300px;
+}
