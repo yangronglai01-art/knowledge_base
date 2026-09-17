@@ -7,6 +7,7 @@ from knowledge_base.query_process.state import QueryGraphState
 from knowledge_base.tool.logger import logger
 from knowledge_base.utils.embedding_utils import generate_embeddings
 from knowledge_base.utils.milvus_utils import create_hybrid_search_request, escape_milvus_string, hybrid_search
+from knowledge_base.utils.permission_utils import build_permission_filter, combine_filter
 from knowledge_base.utils.mongo_history_utils import format_json
 
 
@@ -24,10 +25,12 @@ class NodeSearchEmbedding(NodeBase):
              # 1. 参数校验
              rewritten_query, item_names = self._step1_validate_param(state)
 
-             # 2、向量检索
+             # 2、向量检索（附带权限过滤）
              res = self._step2_search_embedding(
                  rewritten_query=rewritten_query,
-                 item_names=item_names
+                 item_names=item_names,
+                 departments=state.get("departments"),
+                 clearance_level=state.get("clearance_level")
              )
 
              # 3、结果封装
@@ -49,7 +52,7 @@ class NodeSearchEmbedding(NodeBase):
 
         return rewritten_query, item_names
 
-     def _step2_search_embedding(self, rewritten_query, item_names):
+     def _step2_search_embedding(self, rewritten_query, item_names, departments=None, clearance_level=None):
         try:
 
             # 1. 对改写后的用户提问做向量转换
@@ -57,15 +60,19 @@ class NodeSearchEmbedding(NodeBase):
             dense_vector = embeddings.get("dense")[0]
             sparse_vector = embeddings.get("sparse")[0]
 
-            # 2. 健壮性判断
-            expr = None
+            # 2. 组织标量过滤条件（业务条件 + 权限条件）
+            item_expr = None
             if item_names:
                 # 2.1 组织标量条件表达式
                 escaped = ', '.join(f'"{escape_milvus_string(name)}"' for name in item_names)
-                expr = f"item_name in [{escaped}]"
+                item_expr = f"item_name in [{escaped}]"
             else:
                 # 2.1 不组织标量条件表达式
                 logger.info("未指定商品名，将进行全库搜索")
+
+            # 2.2 组织权限过滤条件
+            permission_expr = build_permission_filter(departments, clearance_level)
+            expr = combine_filter(item_expr, permission_expr)
 
             # 3. 向量检索的请求对象
             reqs = create_hybrid_search_request(

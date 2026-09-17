@@ -40,10 +40,12 @@ class QueryRequest(BaseModel):
     """查询请求数据结构"""
     query: str = Field(..., description="查询内容")
     session_id: str = Field(None, description="会话ID")
+    departments: list = Field(None, description="用户所属部门列表")
+    clearance_level: int = Field(None, description="用户密级（可访问密级 <= 自身密级 的文档）")
 
 
 # 5. 后台任务
-def run_query_graph(session_id: str, task_id: str, user_query: str):
+def run_query_graph(session_id: str, task_id: str, user_query: str, departments=None, clearance_level=None):
     try:
         # 1. 更新任务状态: 处理中
         update_task_status(task_id, TASK_STATUS_PROCESSING)
@@ -53,7 +55,9 @@ def run_query_graph(session_id: str, task_id: str, user_query: str):
         init_state = {
             "original_query": user_query,
             "session_id": session_id,
-            "task_id": task_id
+            "task_id": task_id,
+            "departments": departments,
+            "clearance_level": clearance_level
         }
 
         # 3. 启动工作流(调用invoke)
@@ -82,14 +86,18 @@ async def query(background_tasks: BackgroundTasks, request: QueryRequest):
     # 2. 获取session_id,如果没有则创建一个
     session_id = request.session_id
 
-    # 3. 生成任务id
+    # 3. 获取用户权限信息（部门列表 + 密级）
+    departments = request.departments
+    clearance_level = request.clearance_level
+
+    # 4. 生成任务id
     task_id = str(uuid.uuid4())
 
-    # 4. 创建一个异步队列
+    # 5. 创建一个异步队列
     create_sse_queue(task_id)
 
-    # 5. 启动后台任务
-    background_tasks.add_task(run_query_graph, session_id, task_id, user_query)
+    # 6. 启动后台任务
+    background_tasks.add_task(run_query_graph, session_id, task_id, user_query, departments, clearance_level)
 
     # 6. 返回结果
     return {

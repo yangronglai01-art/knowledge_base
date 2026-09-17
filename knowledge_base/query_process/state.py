@@ -32,3 +32,7 @@ class QueryGraphState(TypedDict):
     rewritten_query: str  # 改写后的问题
     history: list  # 历史对话记录
     is_stream: bool  # 是否流式输出
+
+    # 权限相关（用户身份）
+    departments: List[str]  # 用户所属部门列表
+    clearance_level: int  # 用户密级（可访问密级 <= 自身密级 的文档）
