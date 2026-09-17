@@ -1,7 +1,7 @@
 # knowledge_base/query_process/nodes/node_search_embedding.py
 from typing import Tuple
 
-from knowledge_base.config.config import milvus_config
+from knowledge_base.config.config import milvus_config, permission_config
 from knowledge_base.query_process.base import NodeBase
 from knowledge_base.query_process.state import QueryGraphState
 from knowledge_base.tool.logger import logger
@@ -70,8 +70,8 @@ class NodeSearchEmbedding(NodeBase):
                 # 2.1 不组织标量条件表达式
                 logger.info("未指定商品名，将进行全库搜索")
 
-            # 2.2 组织权限过滤条件
-            permission_expr = build_permission_filter(departments, clearance_level)
+            # 2.2 组织权限过滤条件（受配置项总开关控制）
+            permission_expr = build_permission_filter(departments, clearance_level) if permission_config.filter_enabled else None
             expr = combine_filter(item_expr, permission_expr)
 
             # 3. 向量检索的请求对象

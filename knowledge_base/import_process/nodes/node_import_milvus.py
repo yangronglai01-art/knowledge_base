@@ -5,12 +5,11 @@ from typing import Dict, Any
 import logger
 from pymilvus import DataType
 
-from knowledge_base.config.config import milvus_config
+from knowledge_base.config.config import milvus_config, permission_config
 from knowledge_base.import_process.base import NodeBase
 from knowledge_base.import_process.state import ImportGraphState
 from knowledge_base.tool.logger import logger
 from knowledge_base.utils.milvus_utils import get_milvus_client, escape_milvus_string
-from knowledge_base.utils.permission_utils import PUBLIC_DEPT, PUBLIC_CLEARANCE
 
 
 class NodeImportMilvus(NodeBase):
@@ -151,9 +150,9 @@ class NodeImportMilvus(NodeBase):
     def _step4_insert_data(self, chunks_json_data, dept=None, clearance_level=None):
         """ Step4：批量插入切片数据到Milvus+主键回填（写入文档权限元数据）"""
 
-        # 0. 为每个切片写入文档权限元数据（文档级权限，默认全员可访问）
-        dept = dept or PUBLIC_DEPT
-        clearance_level = clearance_level if clearance_level is not None else PUBLIC_CLEARANCE
+        # 0. 为每个切片写入文档权限元数据（文档级权限，默认取配置项默认值）
+        dept = dept or permission_config.default_dept
+        clearance_level = clearance_level if clearance_level is not None else permission_config.default_clearance_level
         for item in chunks_json_data:
             item["dept"] = dept
             item["clearance_level"] = int(clearance_level)

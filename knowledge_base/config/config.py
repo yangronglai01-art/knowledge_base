@@ -112,3 +112,18 @@ class FileUploadConfig:
 file_upload_config = FileUploadConfig(
     data_based_root_dir=os.getenv("DATA_BASED_ROOT_DIR")
 )
+
+@dataclass
+class PermissionConfig:
+    # 权限过滤总开关：置为 false 可整体关闭权限过滤（默认开启）
+    filter_enabled: bool
+    # 文档导入时未指定部门时的默认部门（"*" 表示全员可访问）
+    default_dept: str
+    # 文档导入时未指定密级时的默认密级（1-5，越大越机密）
+    default_clearance_level: int
+
+permission_config = PermissionConfig(
+    filter_enabled=os.getenv("PERMISSION_FILTER_ENABLED") not in ("0", "False", "false"),
+    default_dept=os.getenv("DEFAULT_DOC_DEPT") or "*",
+    default_clearance_level=int(os.getenv("DEFAULT_DOC_CLEARANCE_LEVEL") or "1"),
+)
