@@ -20,7 +20,8 @@ htmlcov/
 
 # Runtime data and logs
 volumes/
-data/
+data/*
+!data/documents/
 logs/
 *.log
 
