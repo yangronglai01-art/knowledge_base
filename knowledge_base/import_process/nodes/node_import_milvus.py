@@ -10,6 +10,7 @@ from knowledge_base.import_process.base import NodeBase
 from knowledge_base.import_process.state import ImportGraphState
 from knowledge_base.tool.logger import logger
 from knowledge_base.utils.milvus_utils import get_milvus_client, escape_milvus_string
+from knowledge_base.utils.permission_utils import PUBLIC_DEPT, PUBLIC_CLEARANCE
 
 
 class NodeImportMilvus(NodeBase):
@@ -32,8 +33,12 @@ class NodeImportMilvus(NodeBase):
         # 步骤3：幂等性处理 - 清理同file_title旧数据
         self._step3_clean_old_data(file_title)
 
-        # 步骤4：批量插入数据+主键chunk_id回填
-        updated_chunks = self._step4_insert_data(chunks_json_data)
+        # 步骤4：批量插入数据+主键chunk_id回填（附带文档权限元数据）
+        updated_chunks = self._step4_insert_data(
+            chunks_json_data,
+            dept=state.get("dept"),
+            clearance_level=state.get("clearance_level")
+        )
 
         # 步骤5：更新全局状态，将回填后的切片回传下游
         return {
@@ -97,6 +102,8 @@ class NodeImportMilvus(NodeBase):
         schema.add_field(field_name="part", datatype=DataType.INT8)  # 分片编号
         schema.add_field(field_name="file_title", datatype=DataType.VARCHAR, max_length=100)  # 源文件标题
         schema.add_field(field_name="item_name", datatype=DataType.VARCHAR, max_length=100)  # 商品名称（幂等性依据）
+        schema.add_field(field_name="dept", datatype=DataType.VARCHAR, max_length=64)  # 文档所属部门（* 表示全员可访问）
+        schema.add_field(field_name="clearance_level", datatype=DataType.INT8)  # 文档密级 1-5，越大越机密
         schema.add_field(field_name="sparse_vector", datatype=DataType.SPARSE_FLOAT_VECTOR)  # 稀疏向量
         schema.add_field(field_name="dense_vector", datatype=DataType.FLOAT_VECTOR, dim=vector_dimension)  # 稠密向量
 
@@ -141,8 +148,15 @@ class NodeImportMilvus(NodeBase):
         collection_name = milvus_config.chunks_collection
         milvus_client.delete(collection_name=collection_name, filter=filter_expr)
 
-    def _step4_insert_data(self, chunks_json_data):
-        """ Step4：批量插入切片数据到Milvus+主键回填"""
+    def _step4_insert_data(self, chunks_json_data, dept=None, clearance_level=None):
+        """ Step4：批量插入切片数据到Milvus+主键回填（写入文档权限元数据）"""
+
+        # 0. 为每个切片写入文档权限元数据（文档级权限，默认全员可访问）
+        dept = dept or PUBLIC_DEPT
+        clearance_level = clearance_level if clearance_level is not None else PUBLIC_CLEARANCE
+        for item in chunks_json_data:
+            item["dept"] = dept
+            item["clearance_level"] = int(clearance_level)
 
         # 1. 批量插入数据
         milvus_client = get_milvus_client()
