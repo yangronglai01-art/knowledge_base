@@ -1,0 +1,136 @@
+{
+  "schema_version": "1.0",
+  "permission_model": {
+    "dept": "文档所属部门，'*' 表示全员可访问（公开文档）",
+    "clearance_level": "密级 1-5，越大越机密；用户仅能命中 clearance_level <= 自身密级 的文档",
+    "filter_rule": "(dept in 用户部门列表 or dept == '*') and clearance_level <= 用户密级"
+  },
+  "documents": [
+    {
+      "category": "售后故障案例",
+      "title": "售后故障案例-BSL系列螺杆空压机高温报警处理",
+      "file": "售后故障案例/售后故障案例-BSL系列螺杆空压机高温报警处理.md",
+      "dept": "售后部",
+      "clearance_level": 2
+    },
+    {
+      "category": "售后故障案例",
+      "title": "售后故障案例-BV系列真空泵抽速下降排查",
+      "file": "售后故障案例/售后故障案例-BV系列真空泵抽速下降排查.md",
+      "dept": "售后部",
+      "clearance_level": 2
+    },
+    {
+      "category": "售后故障案例",
+      "title": "售后故障案例-空压机排气压力不足处理",
+      "file": "售后故障案例/售后故障案例-空压机排气压力不足处理.md",
+      "dept": "售后部",
+      "clearance_level": 2
+    },
+    {
+      "category": "产品技术手册节选",
+      "title": "产品技术手册-BSL系列空压机产品概述",
+      "file": "产品技术手册/产品技术手册-BSL系列空压机产品概述.md",
+      "dept": "*",
+      "clearance_level": 1
+    },
+    {
+      "category": "产品技术手册节选",
+      "title": "产品技术手册-BSL-75A螺杆空压机技术参数",
+      "file": "产品技术手册/产品技术手册-BSL-75A螺杆空压机技术参数.md",
+      "dept": "技术部",
+      "clearance_level": 3
+    },
+    {
+      "category": "产品技术手册节选",
+      "title": "产品技术手册-BV-3030真空泵安装说明",
+      "file": "产品技术手册/产品技术手册-BV-3030真空泵安装说明.md",
+      "dept": "技术部",
+      "clearance_level": 2
+    },
+    {
+      "category": "工艺规范",
+      "title": "工艺规范-螺杆转子磨削工艺要求",
+      "file": "工艺规范/工艺规范-螺杆转子磨削工艺要求.md",
+      "dept": "生产部",
+      "clearance_level": 4
+    },
+    {
+      "category": "工艺规范",
+      "title": "工艺规范-储气罐焊接工艺规范",
+      "file": "工艺规范/工艺规范-储气罐焊接工艺规范.md",
+      "dept": "生产部",
+      "clearance_level": 4
+    },
+    {
+      "category": "工艺规范",
+      "title": "工艺规范-空压机整机装配工艺规程",
+      "file": "工艺规范/工艺规范-空压机整机装配工艺规程.md",
+      "dept": "生产部",
+      "clearance_level": 3
+    },
+    {
+      "category": "质量制度",
+      "title": "质量制度-成品出厂检验规范",
+      "file": "质量制度/质量制度-成品出厂检验规范.md",
+      "dept": "质量部",
+      "clearance_level": 3
+    },
+    {
+      "category": "质量制度",
+      "title": "质量制度-不合格品控制程序",
+      "file": "质量制度/质量制度-不合格品控制程序.md",
+      "dept": "质量部",
+      "clearance_level": 3
+    },
+    {
+      "category": "质量制度",
+      "title": "质量制度-来料检验作业指导书",
+      "file": "质量制度/质量制度-来料检验作业指导书.md",
+      "dept": "质量部",
+      "clearance_level": 2
+    },
+    {
+      "category": "设备操作维护资料",
+      "title": "设备维护-空压机日常点检保养要点",
+      "file": "设备操作维护/设备维护-空压机日常点检保养要点.md",
+      "dept": "设备部",
+      "clearance_level": 2
+    },
+    {
+      "category": "设备操作维护资料",
+      "title": "设备维护-数控外圆磨床操作维护规程",
+      "file": "设备操作维护/设备维护-数控外圆磨床操作维护规程.md",
+      "dept": "生产部",
+      "clearance_level": 3
+    },
+    {
+      "category": "设备操作维护资料",
+      "title": "设备维护-真空泵定期保养计划",
+      "file": "设备操作维护/设备维护-真空泵定期保养计划.md",
+      "dept": "设备部",
+      "clearance_level": 2
+    },
+    {
+      "category": "常用业务流程",
+      "title": "业务流程-售后工单处理流程",
+      "file": "业务流程/业务流程-售后工单处理流程.md",
+      "dept": "售后部",
+      "clearance_level": 1
+    },
+    {
+      "category": "常用业务流程",
+      "title": "业务流程-客户投诉处理流程",
+      "file": "业务流程/业务流程-客户投诉处理流程.md",
+      "dept": "销售部",
+      "clearance_level": 1
+    },
+    {
+      "category": "常用业务流程",
+      "title": "业务流程-备件领用与退库流程",
+      "file": "业务流程/业务流程-备件领用与退库流程.md",
+      "dept": "生产部",
+      "clearance_level": 1
+    }
+  ]
+}
