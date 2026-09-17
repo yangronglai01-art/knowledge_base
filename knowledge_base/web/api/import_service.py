@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict
 
 import uvicorn
-from fastapi import FastAPI, UploadFile, File, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, Form, BackgroundTasks
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
@@ -41,7 +41,7 @@ async def get_import_page():
     return FileResponse(html_path)
 
 # 4. 后台任务
-def run_graph_task(task_id, local_dir, local_file_path):
+def run_graph_task(task_id, local_dir, local_file_path, dept=None, clearance_level=None):
 
     try:
         # 1. 更新任务的全局状态为处理中
@@ -51,7 +51,9 @@ def run_graph_task(task_id, local_dir, local_file_path):
         init_state = {
             "task_id": task_id,
             "local_file_path": local_file_path,
-            "local_dir": local_dir
+            "local_dir": local_dir,
+            "dept": dept,
+            "clearance_level": clearance_level
         }
 
         # 3. 启动工作流
@@ -68,7 +70,12 @@ def run_graph_task(task_id, local_dir, local_file_path):
 
 # 5. 文件上传
 @app.post("/upload", summary="上传文件接口", description="自动触发知识库导入的工作流")
-async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File(..., description="需要上传的文件（pdf、md）")):
+async def upload_file(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(..., description="需要上传的文件（pdf、md）"),
+    dept: str = Form(None, description="文档所属部门（* 表示全员可访问）"),
+    clearance_level: int = Form(None, description="文档密级 1-5，越大越机密")
+):
     """
     上传文件接口
     """
@@ -114,7 +121,7 @@ async def upload_file(background_tasks: BackgroundTasks, file: UploadFile = File
 
 
     # 8. 启动后台任务,调用工作流
-    background_tasks.add_task(run_graph_task, task_id, local_dir, local_file_path)
+    background_tasks.add_task(run_graph_task, task_id, local_dir, local_file_path, dept, clearance_level)
 
     return {
         "code": 200,

@@ -24,5 +24,9 @@ class ImportGraphState(TypedDict):
     chunks: list    # 切片列表
     item_name:str # 识别主体的名称（例如：万用表）
 
+    # 权限元数据（文档级权限）
+    dept: str   # 文档所属部门（* 表示全员可访问）
+    clearance_level: int    # 文档密级 1-5，越大越机密
+
     # 数据库关联
     embeddings_content: list # 包含向量数的列表 ，准备写入 Milvus
