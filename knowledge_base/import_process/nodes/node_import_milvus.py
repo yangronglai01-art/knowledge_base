@@ -10,6 +10,7 @@ from knowledge_base.import_process.base import NodeBase
 from knowledge_base.import_process.state import ImportGraphState
 from knowledge_base.tool.logger import logger
 from knowledge_base.utils.milvus_utils import get_milvus_client, escape_milvus_string
+from knowledge_base.utils.version_utils import save_document_version, compute_content_hash
 
 
 class NodeImportMilvus(NodeBase):
@@ -39,7 +40,10 @@ class NodeImportMilvus(NodeBase):
             clearance_level=state.get("clearance_level")
         )
 
-        # 步骤5：更新全局状态，将回填后的切片回传下游
+        # 步骤5：记录文档版本（知识运营闭环：版本化 + 内容指纹）
+        self._step5_record_version(file_title, updated_chunks, state)
+
+        # 步骤6：更新全局状态，将回填后的切片回传下游
         return {
             "chunks": updated_chunks
         }
@@ -170,6 +174,23 @@ class NodeImportMilvus(NodeBase):
             item["chunk_id"] = inserted_ids[idx]
 
         return chunks_json_data
+
+    def _step5_record_version(self, file_title, updated_chunks, state):
+        """ Step5：记录文档版本（内容指纹 + 自增版本号）。失败不影响导入主流程。"""
+        try:
+            dept = state.get("dept") or permission_config.default_dept
+            clearance_level = state.get("clearance_level")
+            if clearance_level is None:
+                clearance_level = permission_config.default_clearance_level
+            save_document_version(
+                file_title=file_title,
+                chunk_count=len(updated_chunks),
+                dept=dept,
+                clearance_level=int(clearance_level),
+                content_hash=compute_content_hash([c.get("content", "") for c in updated_chunks]),
+            )
+        except Exception as e:
+            logger.warning(f"记录文档版本失败（不影响导入）: {e}")
 
 
 
