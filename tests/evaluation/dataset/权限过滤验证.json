@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "权限过滤验证",
+  "description": "权限过滤负例验证条目（expect_hit=false）。这些条目模拟无权访问目标文档的用户身份，验证文档权限过滤（部门 + 密级）在检索环节是否生效：目标文档不应出现在 Top-K 结果中。",
+  "items": [
+    {
+      "id": "perm-neg-01",
+      "question": "螺杆转子磨削的磨削余量和齿面粗糙度要求是多少？",
+      "expected_hit_keywords": ["磨削余量", "0.4", "砂轮线速度"],
+      "expected_doc_titles": ["工艺规范-螺杆转子磨削工艺要求"],
+      "reference_answer": "螺杆转子精磨削的磨削余量单边0.10–0.20mm，砂轮线速度35–45m/s，齿面粗糙度要求Ra≤0.4μm。",
+      "permission": {"departments": ["生产部"], "clearance_level": 1},
+      "expect_hit": false
+    },
+    {
+      "id": "perm-neg-02",
+      "question": "储气罐焊接前要做哪些准备工作？焊后怎么检验？",
+      "expected_hit_keywords": ["焊材", "坡口", "水压试验"],
+      "expected_doc_titles": ["工艺规范-储气罐焊接工艺规范"],
+      "reference_answer": "焊前准备包括选用匹配焊材并烘烤、加工坡口并清理、控制组对错边量与间隙、焊工持证；焊后做外观检查、无损检测、水压试验。",
+      "permission": {"departments": ["销售部"], "clearance_level": 3},
+      "expect_hit": false
+    },
+    {
+      "id": "perm-neg-03",
+      "question": "BSL-75A螺杆空压机的额定功率和排气量是多少？",
+      "expected_hit_keywords": ["75", "13.2", "0.8"],
+      "expected_doc_titles": ["产品技术手册-BSL-75A螺杆空压机技术参数"],
+      "reference_answer": "BSL-75A额定功率75kW，排气量（0.8MPa）13.2m³/min，额定排气压力0.8MPa。",
+      "permission": {"departments": ["售后部"], "clearance_level": 2},
+      "expect_hit": false
+    }
+  ]
+}
