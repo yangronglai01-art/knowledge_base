@@ -43,7 +43,7 @@ def run(dataset_dir: str, k: int, candidate_limit: int,
     if not items:
         raise RuntimeError(f"未在 {dataset_dir} 找到任何评测条目")
 
-    total = len(items)
+    total = 0
     doc_hits = keyword_hits = no_results = 0
     # 负例（expect_hit=false）权限过滤正确率统计
     neg_total = neg_correct = 0
@@ -70,13 +70,30 @@ def run(dataset_dir: str, k: int, candidate_limit: int,
                 "retrieved": 0, "doc_hit": None, "keyword_hit": None,
                 "expect_hit": expect_hit, "error": str(exc),
             })
-            by_category[category]["total"] += 1
+            if expect_hit:
+                by_category[category]["total"] += 1
+                total += 1
             continue
 
         doc_hit = check_doc_hit(chunks, expected_titles)
         keyword_hit = check_keyword_hit(chunks, expected_keywords)
         is_empty = len(chunks) == 0
 
+        # 负例：只统计权限过滤正确率，不进入正例召回统计
+        if not expect_hit:
+            neg_total += 1
+            if not doc_hit:
+                neg_correct += 1
+            details.append({
+                "id": item["id"], "category": category, "question": question,
+                "retrieved": len(chunks),
+                "doc_hit": doc_hit, "keyword_hit": keyword_hit,
+                "expect_hit": expect_hit,
+                "top_titles": [c.get("file_title", "") for c in chunks[:k]],
+            })
+            continue
+
+        total += 1
         by_category[category]["total"] += 1
         if is_empty:
             no_results += 1
@@ -87,12 +104,6 @@ def run(dataset_dir: str, k: int, candidate_limit: int,
         if keyword_hit:
             keyword_hits += 1
             by_category[category]["keyword_hit"] += 1
-
-        # 负例：期望文档不应出现在结果中
-        if not expect_hit:
-            neg_total += 1
-            if not doc_hit:
-                neg_correct += 1
 
         details.append({
             "id": item["id"], "category": category, "question": question,
