@@ -120,6 +120,62 @@ services: # 定义需要运行的各个服务（容器）集合
         condition: service_healthy
     restart: always
 
+  # ==================== 应用服务 ====================
+  import-service: # 文档导入服务（FastAPI，宿主机 8000 端口）
+    container_name: kb-import-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      # 覆盖 .env 中的 localhost 地址为容器网络内部服务名
+      - MINIO_ENDPOINT=minio:9000
+      - MILVUS_URL=http://standalone:19530
+      - MONGO_URL=mongodb://mongo:27017
+      - DATA_BASED_ROOT_DIR=/app/data
+      - BGE_M3_PATH=/models/bge-m3
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/models/bge-m3:/models/bge-m3:ro # 挂载本地已下载的 BGE-M3 模型权重
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upload:/app/data # 上传文件暂存目录
+    ports:
+      - "8000:8000"
+    command: ["uv", "run", "--frozen", "--no-sync", "python", "-m", "knowledge_base.web.api.import_service"]
+    depends_on:
+      standalone:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    restart: always
+
+  query-service: # 查询服务（FastAPI，宿主机 8001 端口）
+    container_name: kb-query-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MILVUS_URL=http://standalone:19530
+      - MONGO_URL=mongodb://mongo:27017
+      - DATA_BASED_ROOT_DIR=/app/data
+      - BGE_M3_PATH=/models/bge-m3
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/models/bge-m3:/models/bge-m3:ro
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upload:/app/data
+    ports:
+      - "8001:8001"
+    command: ["uv", "run", "--frozen", "--no-sync", "python", "-m", "knowledge_base.web.api.query_service"]
+    depends_on:
+      standalone:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+    restart: always
+
 networks: # 自定义容器内部的虚拟网络
   default: # 覆盖默认网络行为
     name: milvus # 统一命名为 "milvus"。在此网络下，各个容器可直接使用对方的服务名（如 "minio", "etcd", "mongo"）互通有无，无需知道对方的真实内网 IP
