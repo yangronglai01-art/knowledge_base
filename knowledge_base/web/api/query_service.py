@@ -1,4 +1,5 @@
 # 1. 创建应用
+import time
 import uuid
 from pathlib import Path
 
@@ -11,8 +12,9 @@ from starlette.responses import FileResponse, StreamingResponse
 from knowledge_base.query_process.main_graph import KBQueryWorkflow
 from knowledge_base.utils.mongo_history_utils import get_recent_messages, clear_history
 from knowledge_base.utils.feedback_utils import save_feedback, get_feedback_stats, FEEDBACK_TYPES
+from knowledge_base.utils.metrics_utils import record_query_metric, check_alerts
 from knowledge_base.utils.sse_utils_sync import event_generator, create_sse_queue, push_progress
-from knowledge_base.utils.task_utils import update_task_status, TASK_STATUS_PROCESSING, TASK_STATUS_COMPLETED, TASK_STATUS_FAILED
+from knowledge_base.utils.task_utils import update_task_status, get_node_durations, TASK_STATUS_PROCESSING, TASK_STATUS_COMPLETED, TASK_STATUS_FAILED
 from knowledge_base.tool.logger import logger
 from fastapi import Request
 app = FastAPI(
@@ -47,6 +49,7 @@ class QueryRequest(BaseModel):
 
 # 5. 后台任务
 def run_query_graph(session_id: str, task_id: str, user_query: str, departments=None, clearance_level=None):
+    start_time = time.time()
     try:
         # 1. 更新任务状态: 处理中
         update_task_status(task_id, TASK_STATUS_PROCESSING)
@@ -71,11 +74,33 @@ def run_query_graph(session_id: str, task_id: str, user_query: str, departments=
         update_task_status(task_id, TASK_STATUS_COMPLETED)
         push_progress(task_id)
 
+        # 5. 记录整条查询指标（总延迟 + 状态 + 各节点耗时）
+        total_latency_ms = (time.time() - start_time) * 1000
+        record_query_metric(
+            task_id=task_id,
+            session_id=session_id,
+            question=user_query,
+            status=TASK_STATUS_COMPLETED,
+            total_latency_ms=round(total_latency_ms, 2),
+            durations=get_node_durations(task_id),
+        )
+
     except Exception as e:
-        #  5. 更新任务状态:失败
+        #  6. 更新任务状态:失败
         update_task_status(task_id, TASK_STATUS_FAILED)
         push_progress(task_id)
         logger.error(f"流程执行异常: {e}")
+
+        # 7. 记录失败指标
+        total_latency_ms = (time.time() - start_time) * 1000
+        record_query_metric(
+            task_id=task_id,
+            session_id=session_id,
+            question=user_query,
+            status=TASK_STATUS_FAILED,
+            total_latency_ms=round(total_latency_ms, 2),
+            error=str(e),
+        )
 
 # 6. RAG查询
 @app.post("/query")
@@ -188,7 +213,31 @@ async def feedback_stats(session_id: str = None):
         raise HTTPException(status_code=500, detail=f"feedback stats error: {e}")
 
 
-# 12. 健康检查
+# 12. 监控指标汇总（最近时间窗口聚合统计）
+@app.get("/metrics/summary")
+async def metrics_summary(window_seconds: int = 300):
+    try:
+        result = check_alerts(window_seconds=window_seconds)
+        return {
+            "window_seconds": window_seconds,
+            "aggregate": result.get("aggregate"),
+            "alert_count": len(result.get("alerts", [])),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"metrics summary error: {e}")
+
+
+# 13. 监控告警（返回当前触发的告警列表）
+@app.get("/metrics/alerts")
+async def metrics_alerts(window_seconds: int = 300):
+    try:
+        result = check_alerts(window_seconds=window_seconds)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"metrics alerts error: {e}")
+
+
+# 14. 健康检查
 @app.get("/health")
 async def health():
     return {"ok": True}
