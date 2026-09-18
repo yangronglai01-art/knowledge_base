@@ -6,7 +6,8 @@
 #
 # 注意事项：
 # 1. pyproject.toml 通过 [tool.uv.sources] 强制从 pytorch-cuda(cu128) 安装
-#    torch，镜像体积较大（约 6-8GB）。若纯 CPU 部署，见《部署指南》的瘦身方案。
+#    torch，镜像体积较大（约 6-8GB）。若纯 CPU 部署，用 Dockerfile.cpu +
+#    docker-compose.cpu.yml（见《部署指南》「四、构建与启动 → CPU 版（瘦身）构建」）。
 # 2. 本镜像不内置 .env（凭据）、模型权重、上传数据；均通过 docker-compose
 #    的 env_file 与挂载卷注入。
 # =============================================================
