@@ -1,0 +1,31 @@
+# =============================================================
+# CPU 版应用服务覆盖文件
+# 用法（纯 CPU 部署）：
+#   docker compose -f docker-compose.yml -f docker-compose.cpu.yml up -d --build
+#
+# 说明：
+#   - GPU 版（Dockerfile / docker-compose.yml）保持不变。
+#   - 本文件仅把 import-service / query-service 两个应用服务的构建切换到
+#     Dockerfile.cpu，并给 CPU 镜像单独打标（与 GPU 镜像并存，互不覆盖）。
+#   - 基础设施服务（etcd/minio/standalone/attu/mongo/langfuse）沿用基础文件。
+#   - 明确强制 BGE_DEVICE=cpu / BGE_FP16=false，覆盖 .env 中可能的 GPU 设置。
+# =============================================================
+
+services:
+  import-service:
+    image: kb-import-service:cpu
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    environment:
+      BGE_DEVICE: cpu
+      BGE_FP16: "false"
+
+  query-service:
+    image: kb-query-service:cpu
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    environment:
+      BGE_DEVICE: cpu
+      BGE_FP16: "false"
