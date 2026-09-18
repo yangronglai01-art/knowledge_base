@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "设备操作维护",
+  "description": "设备操作维护资料类知识评测条目。",
+  "items": [
+    {
+      "id": "equipment-01",
+      "question": "空压机日常点检要检查哪些内容？空滤、油滤和油分芯多久换一次？",
+      "expected_hit_keywords": ["油位", "排气温度", "漏油", "500", "2000", "4000"],
+      "expected_doc_titles": ["设备维护-空压机日常点检保养要点"],
+      "reference_answer": "每班点检油位、排气温度与压力、运行声音、有无漏油漏气、排水情况。定期保养为500小时更换空滤芯并清洁冷却器、2000小时更换油滤和螺杆机油、4000小时更换油分芯并检查温控阀。",
+      "permission": {"departments": ["设备部"], "clearance_level": 2},
+      "expect_hit": true
+    },
+    {
+      "id": "equipment-02",
+      "question": "数控外圆磨床开机前要检查什么？操作有哪些要求？",
+      "expected_hit_keywords": ["砂轮", "液压", "空运转", "安全门", "导轨"],
+      "expected_doc_titles": ["设备维护-数控外圆磨床操作维护规程"],
+      "reference_answer": "开机前检查液压、润滑、冷却液液位，砂轮有无裂纹破损且砂轮罩牢固，各安全门、限位开关、急停按钮正常，导轨面清洁。操作要求：开机后先空运转3–5分钟，装夹工件牢固，按规定参数进给不得超负荷磨削，加工中不得打开安全门或触摸旋转部位。",
+      "permission": {"departments": ["生产部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "equipment-03",
+      "question": "真空泵多久保养一次？换油怎么操作？",
+      "expected_hit_keywords": ["500 小时", "1000 小时", "2000 小时", "热机", "油窗中线"],
+      "expected_doc_titles": ["设备维护-真空泵定期保养计划"],
+      "reference_answer": "500小时检查并清洁进气滤网、1000小时更换真空泵油和排气滤芯、2000小时检查排气阀片和油封、每6个月检查管路密封。换油操作：在泵温热状态下停机放净旧油，必要时用专用清洗油循环清洗泵腔，加注新油至油窗中线并运行短时后复检油位。",
+      "permission": {"departments": ["设备部"], "clearance_level": 2},
+      "expect_hit": true
+    }
+  ]
+}

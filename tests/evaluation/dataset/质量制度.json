@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "质量制度",
+  "description": "质量制度类知识评测条目。",
+  "items": [
+    {
+      "id": "quality-01",
+      "question": "成品空压机出厂前要做哪些检验项目？",
+      "expected_hit_keywords": ["外观", "排气量", "接地电阻", "保护功能", "绝缘"],
+      "expected_doc_titles": ["质量制度-成品出厂检验规范"],
+      "reference_answer": "出厂检验包括外观与装配检查、性能检验（排气量、排气压力、极限真空、噪声振动、温升）、安全与电气检验（接地电阻、保护功能、绝缘性能）。全部检验项目合格方可放行出厂，任一关键项不合格即按不合格品控制程序处理。",
+      "permission": {"departments": ["质量部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "quality-02",
+      "question": "发现不合格品应该怎么处理？有哪些处置方式？",
+      "expected_hit_keywords": ["标识", "隔离", "评审", "返工", "报废", "让步"],
+      "expected_doc_titles": ["质量制度-不合格品控制程序"],
+      "reference_answer": "不合格品控制流程为发现与报告、标识（红色不合格标识）、隔离、评审、处置、记录。处置方式有返工、返修、让步接收、报废四种。对重复发生的不合格应分析根本原因并制定纠正预防措施。",
+      "permission": {"departments": ["质量部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "quality-03",
+      "question": "来料检验的流程是什么？抽样有什么要求？",
+      "expected_hit_keywords": ["到货核对", "外观检验", "AQL", "材质证明", "抽样"],
+      "expected_doc_titles": ["质量制度-来料检验作业指导书"],
+      "reference_answer": "来料检验流程为到货核对、外观检验、尺寸与性能检验、文件核查、判定与标识。抽样按AQL抽样方案或公司规定比例执行，承压件、安全件等关键物料应适当加严抽样，并必须核验材质证明。",
+      "permission": {"departments": ["质量部"], "clearance_level": 2},
+      "expect_hit": true
+    }
+  ]
+}

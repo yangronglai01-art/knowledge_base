@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "售后故障案例",
+  "description": "售后故障案例类知识评测条目，用于检索召回率（Recall@K）与生成质量评测。expected_hit_keywords 为检索结果正文应命中的关键词；expected_doc_titles 为应命中的源文档标题（对应 Milvus 切片 file_title 字段）；permission 为模拟查询用户身份。",
+  "items": [
+    {
+      "id": "aftersale-01",
+      "question": "BSL-75A空压机运行约40分钟后频繁出现排气温度过高报警，还自动停机，该怎么排查处理？",
+      "expected_hit_keywords": ["冷却器", "翅片", "机房通风", "排气温度过高", "温控阀"],
+      "expected_doc_titles": ["售后故障案例-BSL系列螺杆空压机高温报警处理"],
+      "reference_answer": "排气温度过高报警常见原因包括冷却器散热不良、润滑油问题、温控阀故障、环境温度过高、传感器或接线异常。排查时应先确认运行参数是否为真实高温，检查油位油质，检查冷却器翅片是否积灰堵塞，检查温控阀回油是否经过冷却器，检查机房通风。处理措施：清洗冷却器翅片、改善机房通风、更换油品及滤芯，最后复测验证排气温度稳定在80–95℃。",
+      "permission": {"departments": ["售后部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "aftersale-02",
+      "question": "BV-3030真空泵抽真空时间明显变长，极限真空只能达到8Pa左右达不到工艺要求，是什么原因？怎么处理？",
+      "expected_hit_keywords": ["真空泵油", "乳化", "进气滤芯", "旋片", "极限真空"],
+      "expected_doc_titles": ["售后故障案例-BV系列真空泵抽速下降排查"],
+      "reference_answer": "旋片式真空泵抽速下降常见原因是真空泵油污染或油量不足、进气过滤网或滤芯堵塞、旋片磨损、排气阀片损坏、泵腔结垢。处理措施：换油并清洗泵腔、更换进气滤芯、检查并更换排气阀片，最后空载测试极限真空确认达到工艺要求后交付。",
+      "permission": {"departments": ["售后部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "aftersale-03",
+      "question": "空压机加载后排气压力只能达到0.55MPa，达不到设定压力，供气不足怎么办？",
+      "expected_hit_keywords": ["进气阀", "电磁阀", "空滤", "最小压力阀", "排气压力"],
+      "expected_doc_titles": ["售后故障案例-空压机排气压力不足处理"],
+      "reference_answer": "排气压力不足的常见原因有进气系统堵塞、进气阀开度不足、管路泄漏、最小压力阀故障、皮带或联轴器打滑、主机效率下降。处理措施：更换控制电磁阀、清洁或更换空滤芯、整定最小压力阀，最后复测确认排气压力稳定达到0.8MPa且电流恢复正常。",
+      "permission": {"departments": ["售后部"], "clearance_level": 3},
+      "expect_hit": true
+    }
+  ]
+}

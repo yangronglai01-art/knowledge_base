@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "工艺规范",
+  "description": "工艺规范类知识评测条目。",
+  "items": [
+    {
+      "id": "process-01",
+      "question": "螺杆转子磨削的磨削余量、砂轮线速度和齿面粗糙度要求分别是多少？",
+      "expected_hit_keywords": ["磨削余量", "35–45", "0.4", "砂轮", "粗糙度"],
+      "expected_doc_titles": ["工艺规范-螺杆转子磨削工艺要求"],
+      "reference_answer": "螺杆转子精磨削的磨削余量单边0.10–0.20mm，砂轮线速度35–45m/s，精磨进给量0.01–0.03mm/次，齿面粗糙度要求Ra≤0.4μm，并需控制磨削温升防止烧伤和磨削裂纹。",
+      "permission": {"departments": ["生产部"], "clearance_level": 4},
+      "expect_hit": true
+    },
+    {
+      "id": "process-02",
+      "question": "储气罐焊接前要做哪些准备工作？焊后怎么检验？",
+      "expected_hit_keywords": ["焊材", "坡口", "预热", "无损检测", "水压试验"],
+      "expected_doc_titles": ["工艺规范-储气罐焊接工艺规范"],
+      "reference_answer": "焊前准备包括按母材选用匹配焊材并烘烤保温、按图加工坡口并清理两侧20mm范围内的油污锈蚀水分、控制组对错边量与间隙、焊工持有效资质证书。焊后检验包括外观检查、按规范做射线或超声无损检测、按设计做水压试验，并完整记录焊工编号、焊材牌号批号与焊接参数。",
+      "permission": {"departments": ["生产部"], "clearance_level": 4},
+      "expect_hit": true
+    },
+    {
+      "id": "process-03",
+      "question": "BSL系列空压机整机装配的顺序是什么？装配完成后要做哪些检验？",
+      "expected_hit_keywords": ["主机落位", "电机", "冷却器", "气密性", "扭矩"],
+      "expected_doc_titles": ["工艺规范-空压机整机装配工艺规程"],
+      "reference_answer": "装配顺序依次为主机落位、电机安装对中、冷却器与油分桶安装、管路连接、电气装配、防护件装配。装配完成后需检查各紧固件无松动漏装、进行气密性检查、通电检查控制逻辑与保护信号、加注润滑油至规定油位，再进行空载试车与加载试车。",
+      "permission": {"departments": ["生产部"], "clearance_level": 3},
+      "expect_hit": true
+    }
+  ]
+}

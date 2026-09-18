@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "业务流程",
+  "description": "常用业务流程类知识评测条目。",
+  "items": [
+    {
+      "id": "workflow-01",
+      "question": "售后工单处理流程是怎样的？紧急故障的响应和处理时限是多少？",
+      "expected_hit_keywords": ["受理", "派单", "回访", "关闭", "2 小时", "24 小时"],
+      "expected_doc_titles": ["业务流程-售后工单处理流程"],
+      "reference_answer": "售后工单处理流程为受理登记、分级派单、现场或远程处理、备件申请、处理结果录入、客户回访、工单关闭。紧急故障首次响应≤2小时、处理完成≤24小时，一般故障首次响应≤8小时。",
+      "permission": {"departments": ["售后部"], "clearance_level": 1},
+      "expect_hit": true
+    },
+    {
+      "id": "workflow-02",
+      "question": "客户投诉怎么处理？重大质量投诉的响应和处理时限是多少？",
+      "expected_hit_keywords": ["受理", "调查", "反馈", "闭环", "4 小时", "纠正预防"],
+      "expected_doc_titles": ["业务流程-客户投诉处理流程"],
+      "reference_answer": "客户投诉处理流程为投诉受理、初步确认、调查分析、处理方案、实施处理、反馈闭环、归档改进。重大质量投诉响应≤4小时、处理完成≤3个工作日。投诉分析结论反馈至产品改进与知识库，对共性问题制定纠正预防措施。",
+      "permission": {"departments": ["销售部"], "clearance_level": 1},
+      "expect_hit": true
+    },
+    {
+      "id": "workflow-03",
+      "question": "备件领用和退库的流程是什么？有哪些关键要求？",
+      "expected_hit_keywords": ["领用单", "审批", "出库", "退库", "盘点"],
+      "expected_doc_titles": ["业务流程-备件领用与退库流程"],
+      "reference_answer": "领用流程为需求提出、审批、出库发放、签收确认、用途关联；退库流程为退库申请、检验确认、入库登记、账务处理。关键要求：先审批后发放严禁无单发放、售后备件须关联工单号、仓库定期盘点账实差异及时处理。",
+      "permission": {"departments": ["生产部"], "clearance_level": 1},
+      "expect_hit": true
+    }
+  ]
+}

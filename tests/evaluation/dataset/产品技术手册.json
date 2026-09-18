@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "category": "产品技术手册",
+  "description": "产品技术手册节选类知识评测条目。",
+  "items": [
+    {
+      "id": "product-01",
+      "question": "BSL系列螺杆空压机有哪些产品特点？主要应用在哪些行业？",
+      "expected_hit_keywords": ["高效节能", "智能控制", "低噪", "比功率", "纺织"],
+      "expected_doc_titles": ["产品技术手册-BSL系列空压机产品概述"],
+      "reference_answer": "BSL系列是面向工业制造领域的节能型固定式喷油螺杆空气压缩机，覆盖7.5kW至250kW功率段，特点包括高效节能、智能控制、低噪设计、维护便捷、安全可靠，广泛应用于纺织、化工、机械加工、食品饮料、制药等行业的气源供应。",
+      "permission": {"departments": ["销售部"], "clearance_level": 1},
+      "expect_hit": true
+    },
+    {
+      "id": "product-02",
+      "question": "BSL-75A螺杆空压机的额定功率、排气量和额定排气压力分别是多少？排气温度过高报警和停机的动作值是多少？",
+      "expected_hit_keywords": ["75 kW", "13.2", "0.8 MPa", "100", "110"],
+      "expected_doc_titles": ["产品技术手册-BSL-75A螺杆空压机技术参数"],
+      "reference_answer": "BSL-75A为固定式风冷喷油螺杆空压机，额定功率75kW，排气量（0.8MPa）13.2m³/min，额定排气压力0.8MPa；排气温度过高报警动作值≥100℃，排气温度过高停机动作值≥110℃。",
+      "permission": {"departments": ["技术部"], "clearance_level": 3},
+      "expect_hit": true
+    },
+    {
+      "id": "product-03",
+      "question": "BV-3030真空泵安装的步骤有哪些？安装时有哪些注意事项？",
+      "expected_hit_keywords": ["油窗", "地脚螺栓", "加油", "空载", "点动"],
+      "expected_doc_titles": ["产品技术手册-BV-3030真空泵安装说明"],
+      "reference_answer": "安装前需做到货检查，安装环境温度5℃~40℃、相对湿度≤80%；安装步骤为就位与固定、管路连接、电气连接、油位检查与加油至油窗中线、点动试转确认转向正确；最后空载运行30分钟确认温升噪声振动正常后交付。注意事项包括进气口加装过滤网、抽含水汽气体时加装冷阱或气液分离器、排气口接至室外或经油气分离处理、禁止未加油运行。",
+      "permission": {"departments": ["技术部"], "clearance_level": 3},
+      "expect_hit": true
+    }
+  ]
+}
