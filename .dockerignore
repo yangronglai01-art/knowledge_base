@@ -1,0 +1,36 @@
+# ===== 版本控制 =====
+.git
+.gitignore
+.gitattributes
+
+# ===== 虚拟环境与缓存 =====
+.venv
+venv
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# ===== 凭据（严禁打入镜像）=====
+.env
+.env.*
+!.env.example
+
+# ===== 运行时数据（通过挂载卷提供，不打进镜像）=====
+volumes/
+models/
+data/upload*
+data/*/
+*.log
+
+# ===== 评测报告产物 =====
+tests/evaluation/reports/
+reports/
+
+# ===== 编辑器 / 系统 =====
+.idea
+.vscode
+.DS_Store
+Thumbs.db
