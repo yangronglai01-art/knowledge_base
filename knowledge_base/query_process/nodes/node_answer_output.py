@@ -1,5 +1,6 @@
 # knowledge_base/query_process/nodes/node_answer_output.py
 import re
+import time
 from typing import List, Dict, Tuple
 
 from knowledge_base.query_process.base import NodeBase
@@ -7,6 +8,7 @@ from knowledge_base.query_process.prompt import ANSWER_PROMPT
 from knowledge_base.query_process.state import QueryGraphState
 from knowledge_base.tool.logger import logger
 from knowledge_base.utils.llm_utils import get_llm_client
+from knowledge_base.utils.metrics_utils import record_query_metric
 from knowledge_base.utils.mongo_history_utils import save_chat_message
 from knowledge_base.utils.sse_utils_sync import push_sse_event, SSEEvent
 
@@ -46,9 +48,12 @@ class NodeAnswerOutput(NodeBase):
             prompt = self._step1_construct_prompt(state)
             state["prompt"] = prompt
 
-            # 3. 调用大模型输出答案
+            # 3. 调用大模型输出答案，并记录生成耗时指标
+            gen_start = time.time()
             answer = self._step2_generate_response(state, prompt)
+            gen_elapsed_ms = (time.time() - gen_start) * 1000
             state["answer"] = answer
+            self._record_generation_metric(state, answer, gen_elapsed_ms)
 
             # 3. 提取图片
             image_urls = self._step3_extract_images_from_docs(state.get("reranked_docs"))
@@ -163,6 +168,21 @@ class NodeAnswerOutput(NodeBase):
             formatted_lines.append(formatted_line)
 
         return "\n".join(formatted_lines), char_budget - used_chars
+
+    def _record_generation_metric(self, state, answer, elapsed_ms):
+        """记录答案生成耗时、答案长度、重排数与无结果标志（失败不影响主流程）。"""
+        try:
+            reranked_docs = state.get("reranked_docs") or []
+            record_query_metric(
+                task_id=state.get("task_id"),
+                session_id=state.get("session_id"),
+                generation_latency_ms=round(elapsed_ms, 2),
+                rerank_count=len(reranked_docs),
+                answer_length=len(answer or ""),
+                no_result=bool(not answer),
+            )
+        except Exception as e:
+            logger.warning(f"记录生成指标失败: {e}")
 
     def _step2_generate_response(self, state: QueryGraphState, prompt: str) -> QueryGraphState:
         """

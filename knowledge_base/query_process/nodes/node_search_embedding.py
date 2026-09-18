@@ -1,4 +1,5 @@
 # knowledge_base/query_process/nodes/node_search_embedding.py
+import time
 from typing import Tuple
 
 from knowledge_base.config.config import milvus_config, permission_config
@@ -8,6 +9,7 @@ from knowledge_base.tool.logger import logger
 from knowledge_base.utils.embedding_utils import generate_embeddings
 from knowledge_base.utils.milvus_utils import create_hybrid_search_request, escape_milvus_string, hybrid_search
 from knowledge_base.utils.permission_utils import build_permission_filter, combine_filter
+from knowledge_base.utils.metrics_utils import record_query_metric
 from knowledge_base.utils.mongo_history_utils import format_json
 
 
@@ -25,13 +27,16 @@ class NodeSearchEmbedding(NodeBase):
              # 1. 参数校验
              rewritten_query, item_names = self._step1_validate_param(state)
 
-             # 2、向量检索（附带权限过滤）
+             # 2、向量检索（附带权限过滤），并记录检索耗时指标
+             search_start = time.time()
              res = self._step2_search_embedding(
                  rewritten_query=rewritten_query,
                  item_names=item_names,
                  departments=state.get("departments"),
                  clearance_level=state.get("clearance_level")
              )
+             search_elapsed_ms = (time.time() - search_start) * 1000
+             self._record_retrieval_metric(state, rewritten_query, len(res), search_elapsed_ms)
 
              # 3、结果封装
              return {"embedding_chunks": res}
@@ -39,6 +44,19 @@ class NodeSearchEmbedding(NodeBase):
          except Exception as e:
             logger.exception(f"向量搜索失败: {e}")
             return {"embedding_chunks": []}
+
+     def _record_retrieval_metric(self, state, rewritten_query, retrieval_count, elapsed_ms):
+        """记录检索耗时与召回数指标（失败不影响主流程）。"""
+        try:
+            record_query_metric(
+                task_id=state.get("task_id"),
+                session_id=state.get("session_id"),
+                question=rewritten_query,
+                retrieval_latency_ms=round(elapsed_ms, 2),
+                retrieval_count=retrieval_count,
+            )
+        except Exception as e:
+            logger.warning(f"记录检索指标失败: {e}")
 
      def _step1_validate_param(self, state: QueryGraphState) -> Tuple:
 
