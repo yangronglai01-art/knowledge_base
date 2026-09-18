@@ -10,6 +10,7 @@ from starlette.responses import FileResponse, StreamingResponse
 
 from knowledge_base.query_process.main_graph import KBQueryWorkflow
 from knowledge_base.utils.mongo_history_utils import get_recent_messages, clear_history
+from knowledge_base.utils.feedback_utils import save_feedback, get_feedback_stats, FEEDBACK_TYPES
 from knowledge_base.utils.sse_utils_sync import event_generator, create_sse_queue, push_progress
 from knowledge_base.utils.task_utils import update_task_status, TASK_STATUS_PROCESSING, TASK_STATUS_COMPLETED, TASK_STATUS_FAILED
 from knowledge_base.tool.logger import logger
@@ -145,7 +146,49 @@ async def history(session_id: str, limit: int = 50):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"history error: {e}")
 
-# 10. 健康检查
+class FeedbackRequest(BaseModel):
+    """用户反馈请求数据结构"""
+    session_id: str = Field(None, description="会话ID")
+    message_id: str = Field(None, description="被评价的助手消息ID")
+    question: str = Field(None, description="对应问题")
+    answer: str = Field(None, description="助手回答原文")
+    feedback_type: str = Field(..., description="反馈类型：like/dislike/correction")
+    correction: str = Field(None, description="纠错内容（feedback_type=correction 时）")
+    user_id: str = Field(None, description="反馈用户标识")
+
+
+# 10. 用户反馈（知识运营闭环：点赞/点踩/纠错沉淀）
+@app.post("/feedback")
+async def feedback(request: FeedbackRequest):
+    try:
+        feedback_id = save_feedback(
+            session_id=request.session_id,
+            feedback_type=request.feedback_type,
+            message_id=request.message_id,
+            question=request.question or "",
+            answer=request.answer or "",
+            correction=request.correction or "",
+            user_id=request.user_id or "",
+        )
+        return {"message": "反馈已记录", "feedback_id": feedback_id}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"feedback error: {e}")
+
+
+# 11. 反馈统计（可选按会话过滤）
+@app.get("/feedback/stats")
+async def feedback_stats(session_id: str = None):
+    try:
+        stats = get_feedback_stats(session_id)
+        stats["feedback_types"] = list(FEEDBACK_TYPES)
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"feedback stats error: {e}")
+
+
+# 12. 健康检查
 @app.get("/health")
 async def health():
     return {"ok": True}
