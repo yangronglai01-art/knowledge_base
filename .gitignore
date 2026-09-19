@@ -25,6 +25,9 @@ data/*
 logs/
 *.log
 
+# Downloaded embedding models and local helper scripts (runtime artifacts)
+models/
+
 # Local learning experiments
 playground/
 
