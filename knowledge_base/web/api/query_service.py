@@ -111,6 +111,8 @@ async def query(background_tasks: BackgroundTasks, request: QueryRequest):
 
     # 2. 获取session_id,如果没有则创建一个
     session_id = request.session_id
+    if not session_id:
+        session_id = str(uuid.uuid4())
 
     # 3. 获取用户权限信息（部门列表 + 密级）
     departments = request.departments
