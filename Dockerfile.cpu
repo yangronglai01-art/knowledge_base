@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1
 # =============================================================
 # 掌柜智库 RAG 应用镜像 —— 纯 CPU 版
 # 与 Dockerfile（GPU 版）并存，互不影响；GPU 版保持不变。
@@ -14,9 +13,15 @@
 
 FROM python:3.11-slim-bookworm
 
-# 系统依赖：curl(健康检查/下载)、git、编译工具链、torch 运行所需 libgomp1
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        curl ca-certificates git build-essential libgomp1 \
+# 系统依赖：curl(健康检查/下载)、ca-certificates(HTTPS)、libgomp1(torch CPU 的 OpenMP 运行时)
+# 说明：本项目依赖全部是预编译 wheel，无需编译工具链，故不装 git/build-essential，
+#       既减小镜像体积，又大幅降低 apt 拉包量（避免国内网络下 apt 频繁 502）。
+# 国内网络：apt 源切到阿里云镜像并改用 HTTPS（国内 HTTP 80 端口常被劫持导致 502；
+#           实测容器内仅 aliyun/tencent 的 HTTPS 可达，tuna/ustc/huawei/163 均 TLS 中断）
+RUN sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update -o Acquire::Retries=5 \
+    && apt-get install -y --no-install-recommends -o Acquire::Retries=10 -o Acquire::http::Timeout=60 \
+        curl ca-certificates libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # 安装 uv（生产环境建议固定版本号，如 ghcr.io/astral-sh/uv:0.12.5）
