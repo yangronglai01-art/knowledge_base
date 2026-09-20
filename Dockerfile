@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # =============================================================
-# 掌柜智库 RAG 应用镜像
+# 知犀 RAG 应用镜像
 # 导入服务(import_service) 与 查询服务(query_service) 共用一个镜像，
 # 通过 docker-compose 中的 command 区分启动入口。
 #
