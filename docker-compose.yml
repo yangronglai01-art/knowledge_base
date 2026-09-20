@@ -137,6 +137,7 @@ services: # 定义需要运行的各个服务（容器）集合
       - MONGO_URL=mongodb://mongo:27017
       - DATA_BASED_ROOT_DIR=/app/data
       - BGE_M3_PATH=/models/bge-m3
+      - LANGFUSE_HOST=http://langfuse-server:3000
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/models/bge-m3:/models/bge-m3:ro # 挂载本地已下载的 BGE-M3 模型权重
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upload:/app/data # 上传文件暂存目录
@@ -165,6 +166,7 @@ services: # 定义需要运行的各个服务（容器）集合
       - MONGO_URL=mongodb://mongo:27017
       - DATA_BASED_ROOT_DIR=/app/data
       - BGE_M3_PATH=/models/bge-m3
+      - LANGFUSE_HOST=http://langfuse-server:3000
     volumes:
       - ${DOCKER_VOLUME_DIRECTORY:-.}/models/bge-m3:/models/bge-m3:ro
       - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/upload:/app/data
