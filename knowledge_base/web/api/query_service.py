@@ -15,6 +15,7 @@ from knowledge_base.utils.feedback_utils import save_feedback, get_feedback_stat
 from knowledge_base.utils.metrics_utils import record_query_metric, check_alerts
 from knowledge_base.utils.sse_utils_sync import event_generator, create_sse_queue, push_progress
 from knowledge_base.utils.task_utils import update_task_status, get_node_durations, TASK_STATUS_PROCESSING, TASK_STATUS_COMPLETED, TASK_STATUS_FAILED
+from knowledge_base.utils.langfuse_utils import trace_query_context
 from knowledge_base.tool.logger import logger
 from fastapi import Request
 app = FastAPI(
@@ -66,9 +67,16 @@ def run_query_graph(session_id: str, task_id: str, user_query: str, departments=
 
         # 3. 启动工作流(调用invoke)
         # KBQueryWorkflow.create_and_run(init_state, stream=True)
-        for chunk in KBQueryWorkflow.create_and_run(init_state, stream=True):
-            for node_name, node_result in chunk.items():
-                logger.info(f"{node_name}: {node_result}")
+        with trace_query_context(
+            trace_name=task_id,
+            session_id=session_id,
+            user_id=",".join(departments) if departments else None,
+            metadata={"task_id": task_id, "query": user_query},
+            tags=["query"],
+        ):
+            for chunk in KBQueryWorkflow.create_and_run(init_state, stream=True):
+                for node_name, node_result in chunk.items():
+                    logger.info(f"{node_name}: {node_result}")
 
         # 4. 更新任务状态: 完成
         update_task_status(task_id, TASK_STATUS_COMPLETED)
