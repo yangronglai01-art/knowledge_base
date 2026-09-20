@@ -20,8 +20,8 @@ from knowledge_base.tool.logger import logger
 
 # 1. 定义应用
 app = FastAPI(
-    title="掌柜智库:文档导入",
-    description="当前文档是掌柜智库文档导入相关接口的定义"
+    title="知犀:文档导入",
+    description="当前文档是知犀文档导入相关接口的定义"
 )
 
 # 2. 跨域

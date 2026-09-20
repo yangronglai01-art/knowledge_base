@@ -19,8 +19,8 @@ from knowledge_base.utils.langfuse_utils import trace_query_context
 from knowledge_base.tool.logger import logger
 from fastapi import Request
 app = FastAPI(
-    title="掌柜智库-查询API",
-    description="此文档是掌柜智库查询流程的API接口说明"
+    title="知犀-查询API",
+    description="此文档是知犀查询流程的API接口说明"
 )
 
 # 2. 跨域
